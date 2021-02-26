@@ -4,8 +4,8 @@ pipeline {
          pollSCM('* * * * *')
      }
     tools{
-        maven 'maven'
-        jdk 'Jdk'
+         maven 'MAVEN-3.6.3'
+        jdk 'JDK 15'
     }
     stages{
           stage('Fetch') {
@@ -13,13 +13,13 @@ pipeline {
                sh 'echo $JOB_NAME'
                 sh 'echo $BUILD_NUMBER'
                 sh 'echo Fetch'
-               git branch: 'master', url: 'https://github.com/roshenreji/SpringChallenge.git'
+               git branch: 'master', url: 'https://github.com/Vaishnavi-D-R/SpringChallenge.git'
             }
         }
         
         stage('Clean'){
             steps{
-                dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
                     sh 'echo Clean'
                     sh 'mvn  clean'
                 }
@@ -27,7 +27,7 @@ pipeline {
         }
         stage('Validate'){
                 steps{
-                     dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                     dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
                 
                         sh 'mvn  validate'
                      }
@@ -36,7 +36,7 @@ pipeline {
          }
         stage('Compile'){
                 steps{
-                     dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                     dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
                  
                         sh 'echo Compile'
                          sh 'mvn  compile'
@@ -48,7 +48,7 @@ pipeline {
         
              stage('Test'){
                  steps {
-                      dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                      dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
                          sh 'echo Test'
                          sh 'mvn test'
                       }
@@ -62,9 +62,9 @@ pipeline {
 
             stage('Sonar Analysis'){
             steps{
-                 dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
-                    withSonarQubeEnv('Sonar'){
-                        withMaven(maven:'maven'){
+                 dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                    withSonarQubeEnv('sonar-server'){
+                        withMaven(maven:'MAVEN-3.6.3'){
                             sh 'mvn sonar:sonar'
                         }
                         
@@ -89,7 +89,7 @@ pipeline {
         }
             stage('Build'){
             steps {
-                 dir("C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
+                 dir("C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2"){
                 
                         sh 'echo Build'
                         sh 'mvn  package -Dbuild.number=-${BUILD_NUMBER}'
@@ -155,12 +155,12 @@ pipeline {
     post{
         success{
             echo 'I succeeded!'
-            mail to:'reynar6026@gmail.com',
+            mail to:'vaishnavidr123@gmail.com',
             subject:"Pipeline Succeeded: ${currentBuild.fullDisplayName}",
             body:"Built is success with ${env.BUILD_URL}"
 
              rtUpload (
-                    serverId: 'JfrogId',
+                    serverId: 'ARTIFACTORY_SERVER',
                     spec: '''{
                     "files": [
                          {
@@ -176,7 +176,7 @@ pipeline {
 
 
 rtDownload (
-                    serverId: 'JfrogId',
+                    serverId: 'ARTIFACTORY_SERVER',
                     spec: '''{
                     "files": [
                          {
@@ -187,18 +187,19 @@ rtDownload (
                 }''',
  
   
-    buildName: 'Build2',
+    buildName: 'MYBUILD',
     buildNumber: '1'
 )
 
-       sshagent(['4baffbbd-61c4-4561-b27c-021e3f5f66ef']){
-                    //sh 'scp -r C:/Users/roshe/.jenkins/workspace/AwsChallenge/CodingChallenge-2/target/*.jar ubuntu@54.201.166.106:/home/ubuntu/artifacts'
-                    sh 'scp -r D:/Software/jdk-11.0.10_linux-aarch64_bin.tar.gz ubuntu@54.201.166.106:/home/ubuntu/artifacts'
+       sshagent(['513fbce6-0f7a-4bc0-8cd9-66f09ab7ab56']){
+            
+                    sh 'scp -r C:/Windows/System32/config/systemprofile/AppData/Local/Jenkins/.jenkins/workspace/AwsChallenge/CodingChallenge-2/target/*.jar ubuntu@52.25.51.185:/home/ubuntu/artifacts'
+                    //sh 'scp -r D:/Software/jdk-11.0.10_linux-aarch64_bin.tar.gz ubuntu@54.201.166.106:/home/ubuntu/artifacts'
         }
         }
         failure{
             echo 'I failed!'
-            mail to:'reynar6026@gmail.com',
+            mail to:'vaishnavidr123@gmail.com',
             subject:"Pipeline Failed: ${currentBuild.fullDisplayName}",
             body:"Built is failed with ${env.BUILD_URL}"
         }
